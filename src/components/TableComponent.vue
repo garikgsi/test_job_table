@@ -12,11 +12,16 @@
       :loading="loading"
     >
       <template v-slot:top>
-        <v-row>
+        <v-row align="center">
           <v-col cols="2">
             <v-menu offset-y :disabled="tableActionsDisabled">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn color="primary" v-bind="attrs" v-on="on">
+                <v-btn
+                  color="primary"
+                  v-bind="attrs"
+                  v-on="on"
+                  :disabled="tableActionsDisabled"
+                >
                   Actions
                 </v-btn>
               </template>
@@ -72,7 +77,9 @@
             <v-row align="center">
               <v-col class="grow">{{ error }}</v-col>
               <v-col class="shrink"
-                ><v-btn color="error" @click="tryAgain">Try again</v-btn></v-col
+                ><v-btn color="error" @click="tryAgain" v-if="lastAction"
+                  >Try again</v-btn
+                ></v-col
               >
             </v-row>
           </v-alert>
@@ -171,9 +178,13 @@ export default {
             });
             // remove in vuex
             this.loading = true;
-            this.removeTableRows({ id: deleteIds }).finally(() => {
-              this.loading = false;
-            });
+            this.removeTableRows({ id: deleteIds })
+              .then(() => {
+                this.tableSelected = [];
+              })
+              .finally(() => {
+                this.loading = false;
+              });
           }
           break;
       }
